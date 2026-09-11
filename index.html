@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCC IPv4 &amp; IPv6 — Jamal Ibrahim</title>
+<style>
+  :root{
+    --ink:#12212e;
+    --ink-2:#1c3444;
+    --paper:#f6f3ec;
+    --line:#dcd6c7;
+    --accent:#c98a2c;
+    --accent-2:#1f7a6c;
+    --text:#1b1b18;
+    --text-mute:#5b5850;
+    --code-bg:#0f1b26;
+    --code-text:#d9e6ea;
+    --serif: 'Source Serif Pro', Georgia, 'Iowan Old Style', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--text); font-family:var(--sans); line-height:1.6;}
+
+  header.site{
+    background:var(--ink); color:#eef1ec;
+    padding:2.2rem 1.5rem 1.4rem; text-align:center;
+    border-bottom:3px solid var(--accent);
+  }
+  header.site h1{
+    font-family:var(--serif); font-weight:600;
+    font-size:clamp(1.7rem, 4vw, 2.4rem); margin:0 0 .3rem;
+  }
+  header.site p{margin:0; color:#b9c3c9; font-size:.9rem;}
+  header.site .byline{margin-top:.25rem; font-size:.8rem; color:#8b98a0;}
+  header.site .tag{
+    display:inline-block; margin-top:.8rem; font-family:var(--mono);
+    font-size:.7rem; color:var(--accent); border:1px solid rgba(201,138,44,.5);
+    padding:.22rem .55rem; border-radius:2px;
+  }
+
+  /* primary category bar */
+  .catbar-wrap{background:var(--ink-2); border-bottom:1px solid rgba(255,255,255,.08); position:sticky; top:0; z-index:20;}
+  .catbar{max-width:1080px; margin:0 auto; display:flex; overflow-x:auto; padding:0 .5rem;}
+  .catbar::-webkit-scrollbar{height:5px;}
+  .cat{
+    flex:0 0 auto; background:none; border:none; color:#aebac1;
+    font-family:var(--sans); font-size:.88rem; font-weight:600;
+    padding:.85rem 1.1rem; cursor:pointer; border-bottom:3px solid transparent;
+    white-space:nowrap;
+  }
+  .cat:hover{color:#eef1ec;}
+  .cat.active{color:#ffffff; border-bottom-color:var(--accent);}
+
+  /* secondary sub-tab bar */
+  .subbar-wrap{background:#0e1a24; position:sticky; top:44px; z-index:19; border-bottom:1px solid rgba(255,255,255,.06);}
+  .subbar{max-width:1080px; margin:0 auto; display:flex; overflow-x:auto; padding:0 .5rem;}
+  .subbar::-webkit-scrollbar{height:4px;}
+  .subtab{
+    flex:0 0 auto; background:none; border:none; color:#7e8b93;
+    font-family:var(--sans); font-size:.8rem; padding:.6rem .85rem; cursor:pointer;
+    border-bottom:2px solid transparent; white-space:nowrap;
+  }
+  .subtab:hover{color:#d7dfe3;}
+  .subtab.active{color:var(--accent); border-bottom-color:var(--accent-2); font-weight:600;}
+
+  main{max-width:800px; margin:0 auto; padding:2.4rem clamp(1.2rem, 4vw, 2rem) 6rem;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fadein .2s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .kicker{font-family:var(--mono); font-size:.7rem; color:var(--accent); letter-spacing:.06em; margin-bottom:.4rem;}
+  h2{font-family:var(--serif); font-size:1.6rem; margin:0 0 .3rem; color:var(--ink-2);}
+  h3{font-family:var(--serif); font-size:1.1rem; margin:1.5rem 0 .5rem; color:var(--ink-2);}
+  p{margin:.65rem 0;}
+  ul, ol{padding-left:1.3rem;}
+  li{margin:.3rem 0;}
+
+  .callout{background:#fff9ec; border:1px solid #e9d9ad; border-left:4px solid var(--accent); padding:.75rem 1rem; border-radius:3px; margin:1rem 0; font-size:.9rem;}
+  .callout strong{color:#8a5a12;}
+
+  table{width:100%; border-collapse:collapse; margin:1rem 0 1.3rem; font-size:.88rem;}
+  th, td{border:1px solid var(--line); padding:.45rem .6rem; text-align:left;}
+  th{background:var(--ink); color:#eef1ec; font-family:var(--mono); font-size:.7rem; letter-spacing:.03em;}
+  tr:nth-child(even) td{background:#efece1;}
+
+  pre{background:var(--code-bg); color:var(--code-text); padding:.95rem 1.05rem; border-radius:5px; overflow-x:auto; font-family:var(--mono); font-size:.8rem; line-height:1.55; margin:.85rem 0 1.2rem;}
+  code{font-family:var(--mono);}
+  p code, li code{background:#ece7d8; padding:.1rem .35rem; border-radius:3px; font-size:.85em;}
+
+  footer{text-align:center; padding:2.2rem 1rem 3rem; color:var(--text-mute); font-size:.8rem; border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <h1>DCC IPv4 &amp; IPv6</h1>
+  <p>Eigen studieoverzicht</p>
+  <p class="byline">Gemaakt door Jamal Ibrahim</p>
+  <span class="tag">MBO4 IT · Netwerken</span>
+</header>
+
+<div class="catbar-wrap">
+  <nav class="catbar" id="catbar"></nav>
+</div>
+<div class="subbar-wrap">
+  <nav class="subbar" id="subbar"></nav>
+</div>
+
+<main id="main"></main>
+
+<footer>Eigen studieoverzicht — DCC IPv4 &amp; IPv6. — Gemaakt door Jamal Ibrahim</footer>
+
+<script>
+(function(){
+
+var DATA = {
+  ipv4: {
+    label: "IPv4 configuratie",
+    pages: [
+      {id:"ipv4-routers", label:"Routers verbinden", kicker:"IPV4", title:"IPv4 Routers verbinden", html:`
+        <p>Basisstappen om twee routers via IPv4 met elkaar te laten praten: interface configureren en een statische route toevoegen.</p>
+        <pre>Router(config)# interface g0/0
+Router(config-if)# ip address 192.168.1.1 255.255.255.0
+Router(config-if)# no shutdown</pre>
+        <p>Op de andere router hetzelfde, met het buurnetwerk. Daarna een statische route zodat beide netwerken elkaar kunnen bereiken:</p>
+        <pre>Router(config)# ip route 192.168.2.0 255.255.255.0 192.168.1.2</pre>
+        <div class="callout"><strong>Let op:</strong> vergeet <code>no shutdown</code> niet — interfaces staan standaard uit.</div>
+      `},
+      {id:"ipv4-rip", label:"RIP", kicker:"IPV4", title:"IPv4 RIP", html:`
+        <p><strong>RIP (Routing Information Protocol)</strong> is een eenvoudig distance-vector routeringsprotocol, gebaseerd op hopcount (max. 15 hops).</p>
+        <pre>Router(config)# router rip
+Router(config-router)# version 2
+Router(config-router)# network 192.168.1.0
+Router(config-router)# network 192.168.2.0
+Router(config-router)# no auto-summary</pre>
+        <p><code>network</code> geeft aan welke direct-verbonden netwerken meegenomen worden in RIP. <code>no auto-summary</code> voorkomt automatische samenvatting naar klasse-grenzen (belangrijk bij VLSM).</p>
+        <h3>Controleren</h3>
+        <pre>show ip route rip
+show ip protocols
+debug ip rip</pre>
+      `},
+      {id:"ipv4-eigrp", label:"EIGRP", kicker:"IPV4", title:"IPv4 EIGRP", html:`
+        <p><strong>EIGRP</strong> is een Cisco-eigen, geavanceerd distance-vector protocol (gebruikt DUAL-algoritme) dat sneller convergeert dan RIP.</p>
+        <pre>Router(config)# router eigrp 100
+Router(config-router)# network 192.168.1.0 0.0.0.255
+Router(config-router)# no auto-summary</pre>
+        <p>Het nummer (<code>100</code>) is het Autonomous System-nummer — moet op alle routers in hetzelfde EIGRP-domein gelijk zijn. De wildcard mask (<code>0.0.0.255</code>) geeft het bereik van het netwerk aan.</p>
+        <h3>Controleren</h3>
+        <pre>show ip eigrp neighbors
+show ip route eigrp</pre>
+      `},
+      {id:"ipv4-ospf", label:"OSPF", kicker:"IPV4", title:"IPv4 OSPF", html:`
+        <p><strong>OSPF</strong> is een link-state protocol dat werkt met areas; area 0 (backbone) is verplicht.</p>
+        <pre>Router(config)# router ospf 1
+Router(config-router)# network 192.168.1.0 0.0.0.255 area 0</pre>
+        <p>Het process-ID (<code>1</code>) is lokaal — hoeft niet overeen te komen tussen routers.</p>
+        <h3>Controleren</h3>
+        <pre>show ip ospf neighbor
+show ip route ospf</pre>
+      `},
+      {id:"ipv4-dhcp-server", label:"DHCP via Server", kicker:"IPV4", title:"IPv4 DHCP via Server", html:`
+        <p>Als de DHCP-server niet in hetzelfde VLAN/subnet staat als de clients, moet de router de DHCP-broadcasts doorsturen als unicast naar de server (<strong>DHCP-relay</strong>).</p>
+        <pre>Router(config)# interface vlan 10
+Router(config-if)# ip helper-address 192.168.99.10</pre>
+        <p><code>ip helper-address</code> wordt geplaatst op de interface/SVI die het dichtst bij de clients staat.</p>
+      `},
+      {id:"ipv4-dhcp-router", label:"DHCP via Router", kicker:"IPV4", title:"IPv4 DHCP via Router", html:`
+        <p>De router zelf kan ook als DHCP-server optreden voor zijn eigen subnet.</p>
+        <pre>Router(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10
+Router(config)# ip dhcp pool LAN
+Router(dhcp-config)# network 192.168.1.0 255.255.255.0
+Router(dhcp-config)# default-router 192.168.1.1
+Router(dhcp-config)# dns-server 8.8.8.8</pre>
+        <p><code>ip dhcp excluded-address</code> reserveert adressen (bijv. voor het gateway-adres) zodat de pool die niet uitdeelt.</p>
+        <h3>Controleren</h3>
+        <pre>show ip dhcp binding
+show ip dhcp pool</pre>
+      `}
+    ]
+  },
+  ipv6: {
+    label: "IPv6 configuratie",
+    pages: [
+      {id:"ipv6-routers", label:"Routers verbinden", kicker:"IPV6", title:"IPv6 Routers verbinden", html:`
+        <p>Eerst IPv6-routing globaal activeren, dan adressen toewijzen en eventueel een statische route toevoegen.</p>
+        <pre>Router(config)# ipv6 unicast-routing
+Router(config)# interface g0/0
+Router(config-if)# ipv6 address 2001:db8:1::1/64
+Router(config-if)# ipv6 enable
+Router(config-if)# no shutdown</pre>
+        <pre>Router(config)# ipv6 route 2001:db8:2::/64 2001:db8:1::2</pre>
+        <div class="callout"><strong>Let op:</strong> zonder <code>ipv6 unicast-routing</code> routeert een Cisco-router geen IPv6-verkeer tussen interfaces.</div>
+      `},
+      {id:"ipv6-rip", label:"RIP", kicker:"IPV6", title:"IPv6 RIP (RIPng)", html:`
+        <p><strong>RIPng</strong> is de IPv6-variant van RIP. De configuratie werkt met een <em>proces-naam</em> in plaats van een nummer, en wordt per interface geactiveerd.</p>
+        <h3>RIP activeren</h3>
+        <pre>Router(config)# ipv6 unicast-routing
+Router(config)# ipv6 router rip CCNA</pre>
+        <h3>In de interface</h3>
+        <pre>Router(config)# interface g0/0
+Router(config-if)# ipv6 rip CCNA enable</pre>
+        <p>Herhaal het laatste commando op elke interface die bij dit RIP-proces hoort. De naam (<code>CCNA</code>) moet overeenkomen met de naam die je bij <code>ipv6 router rip</code> hebt gekozen — mag vrij gekozen worden, hoeft niet exact deze naam te zijn.</p>
+        <h3>Controleren</h3>
+        <pre>show ipv6 rip
+show ipv6 route rip</pre>
+      `},
+      {id:"ipv6-eigrp", label:"EIGRP", kicker:"IPV6", title:"IPv6 EIGRP", html:`
+        <pre>Router(config)# ipv6 unicast-routing
+Router(config)# ipv6 router eigrp 100
+Router(config-rtr)# eigrp router-id 1.1.1.1
+Router(config-rtr)# exit
+Router(config)# interface g0/0
+Router(config-if)# ipv6 eigrp 100</pre>
+        <p>Een <code>router-id</code> moet bij IPv6 EIGRP handmatig ingesteld worden (IPv6 heeft geen IPv4-adres om er automatisch een van af te leiden).</p>
+        <h3>Controleren</h3>
+        <pre>show ipv6 eigrp neighbors
+show ipv6 route eigrp</pre>
+      `},
+      {id:"ipv6-ospf", label:"OSPF", kicker:"IPV6", title:"IPv6 OSPF (OSPFv3)", html:`
+        <pre>Router(config)# ipv6 unicast-routing
+Router(config)# ipv6 router ospf 1
+Router(config-rtr)# router-id 1.1.1.1
+Router(config-rtr)# exit
+Router(config)# interface g0/0
+Router(config-if)# ipv6 ospf 1 area 0</pre>
+        <p>Net als bij EIGRP moet de <code>router-id</code> handmatig gezet worden.</p>
+        <h3>Controleren</h3>
+        <pre>show ipv6 ospf neighbor
+show ipv6 route ospf</pre>
+      `},
+      {id:"ipv6-dhcp-server", label:"DHCP via Server", kicker:"IPV6", title:"IPv6 DHCP via Server", html:`
+        <p>Staat de DHCPv6-server niet lokaal, dan stuurt de interface de aanvragen door met een relay-adres.</p>
+        <pre>Router(config)# interface g0/0
+Router(config-if)# ipv6 dhcp relay destination 2001:db8:99::10</pre>
+      `},
+      {id:"ipv6-dhcp-router", label:"DHCP via Router", kicker:"IPV6", title:"IPv6 DHCP via Router", html:`
+        <p>De router kan zelf als stateful DHCPv6-server fungeren:</p>
+        <pre>Router(config)# ipv6 dhcp pool LANPOOL
+Router(config-dhcpv6)# address prefix 2001:db8:1::/64
+Router(config-dhcpv6)# dns-server 2001:4860:4860::8888
+Router(config-dhcpv6)# exit
+Router(config)# interface g0/0
+Router(config-if)# ipv6 dhcp server LANPOOL
+Router(config-if)# ipv6 nd other-config-flag</pre>
+        <p><code>ipv6 nd other-config-flag</code> vertelt hosts dat ze via DHCPv6 extra info (zoals DNS) moeten ophalen, ook als het adres zelf via SLAAC komt.</p>
+      `}
+    ]
+  },
+  vlan: {
+    label: "Virtual LAN",
+    pages: [
+      {id:"vlan-data", label:"Data Virtual LAN", kicker:"VLAN", title:"Data Virtual LAN", html:`
+        <p>Het <strong>Data VLAN</strong> (ook wel user-VLAN) is het VLAN waarin normaal gebruikersverkeer loopt (pc's, printers, servers).</p>
+        <h3>VLAN's aanmaken</h3>
+        <pre>Switch(config)# vlan 10
+Switch(config-vlan)# name Sales
+Switch(config-vlan)# exit
+Switch(config)# vlan 20
+Switch(config-vlan)# name IT
+Switch(config-vlan)# exit</pre>
+        <p>Je moet elk VLAN op <strong>elke switch</strong> aanmaken waar dat VLAN gebruikt wordt (tenzij je VTP gebruikt, zie "Verschillende VLANs").</p>
+        <h3>Access-poort</h3>
+        <pre>Switch(config)# interface fa0/1
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 10</pre>
+        <h3>Trunk-poort</h3>
+        <p>Draagt meerdere VLAN's tegelijk via <strong>IEEE 802.1Q tagging</strong>.</p>
+        <pre>Switch(config)# interface fa0/24
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan 10,20,30
+Switch(config-if)# switchport trunk native vlan 99</pre>
+      `},
+      {id:"vlan-roas", label:"Router On A Stick", kicker:"VLAN", title:"Router On A Stick", html:`
+        <p>Elk VLAN is een apart Layer 3-netwerk, dus is routing nodig om ze te laten communiceren. Bij ROAS gebruikt de router één interface, opgesplitst in <strong>subinterfaces</strong>.</p>
+        <pre>Switch(config)# vlan 10
+Switch(config-vlan)# name A
+Switch(config-vlan)# exit
+Switch(config)# interface range f0/1-3
+Switch(config-if-range)# switchport mode access
+Switch(config-if-range)# switchport access vlan 2
+Switch(config)# interface f0/24
+Switch(config-if)# switchport mode trunk</pre>
+        <pre>Router(config)# interface g0/0.10
+Router(config-subif)# encapsulation dot1Q 10
+Router(config-subif)# ip address 192.168.10.1 255.255.255.0
+
+Router(config)# interface g0/0.20
+Router(config-subif)# encapsulation dot1Q 20
+Router(config-subif)# ip address 192.168.20.1 255.255.255.0
+
+Router(config)# interface g0/0
+Router(config-if)# no shutdown</pre>
+        <div class="callout"><strong>Let op:</strong> het encapsulatienummer moet exact overeenkomen met het VLAN-ID.</div>
+        <h3>Alternatief: Multilayer switch</h3>
+        <pre>Switch(config)# ip routing
+Switch(config)# interface vlan 10
+Switch(config-if)# ip address 192.168.10.1 255.255.255.0
+Switch(config-if)# no shutdown</pre>
+      `},
+      {id:"vlan-wlan", label:"WLAN", kicker:"VLAN", title:"WLAN", html:`
+        <p>Een <strong>WLAN</strong> is de draadloze toegang tot het netwerk, vaak gekoppeld aan VLAN's via een accesspoint of controller.</p>
+        <ul>
+          <li>Een AP verbindt via een <strong>trunk-poort</strong>, zodat meerdere SSID's elk aan een eigen VLAN gekoppeld worden.</li>
+          <li>Gastnetwerken staan vrijwel altijd in een apart VLAN met beperkte toegang.</li>
+          <li>RADIUS kan gebruikers na authenticatie dynamisch aan een VLAN koppelen.</li>
+        </ul>
+        <pre>Switch(config)# interface fa0/2
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan 10,30</pre>
+      `},
+      {id:"vlan-soorten", label:"Verschillende VLANs", kicker:"VLAN", title:"Verschillende VLANs", html:`
+        <table>
+          <tr><th>VLAN-type</th><th>Doel</th></tr>
+          <tr><td>Data VLAN</td><td>Normaal gebruikersverkeer</td></tr>
+          <tr><td>Default VLAN</td><td>VLAN 1 — standaard bij een nieuwe switch</td></tr>
+          <tr><td>Native VLAN</td><td>Untagged VLAN op een trunk-poort</td></tr>
+          <tr><td>Management VLAN</td><td>Beheer van de switch zelf</td></tr>
+          <tr><td>Voice VLAN</td><td>VoIP-telefoons, vaak met QoS</td></tr>
+        </table>
+        <div class="callout"><strong>Let op:</strong> gebruik VLAN 1 nooit als management- of data-VLAN.</div>
+        <h3>VTP</h3>
+        <pre>Switch(config)# vtp domain SCHOOL
+Switch(config)# vtp mode server
+Switch(config)# vtp password Cisco123</pre>
+        <h3>DTP</h3>
+        <pre>Switch(config-if)# switchport nonegotiate</pre>
+      `}
+    ]
+  },
+  tunnels: {
+    label: "Tunnels / ACL",
+    pages: [
+      {id:"tun-gre", label:"GRE Tunnel", kicker:"TUNNELS", title:"GRE Tunnel", html:`
+        <p><strong>GRE</strong> kapselt verkeer in om twee netwerken over een bestaand IP-netwerk (bijv. het internet) te verbinden alsof ze rechtstreeks verbonden zijn.</p>
+        <pre>Router(config)# interface tunnel0
+Router(config-if)# tunnel source g0/0
+Router(config-if)# tunnel destination 203.0.113.2
+Router(config-if)# ip address 10.0.0.1 255.255.255.252</pre>
+        <p>Beide kanten van de tunnel hebben een eigen tunnel-interface nodig met elkaars publieke adres als bron/bestemming.</p>
+        <h3>Controleren</h3>
+        <pre>show interfaces tunnel0
+ping 10.0.0.2</pre>
+      `},
+      {id:"tun-vpn", label:"VPN Tunnel", kicker:"TUNNELS", title:"VPN Tunnel (IPsec)", html:`
+        <p>Een <strong>site-to-site IPsec VPN</strong> versleutelt verkeer tussen twee locaties. Basisonderdelen: een ISAKMP (IKE) policy, een pre-shared key, een transform-set en een crypto map.</p>
+        <pre>Router(config)# crypto isakmp policy 10
+Router(config-isakmp)# encryption aes 256
+Router(config-isakmp)# authentication pre-share
+Router(config-isakmp)# group 14
+Router(config-isakmp)# exit
+Router(config)# crypto isakmp key MijnSleutel address 203.0.113.2
+
+Router(config)# crypto ipsec transform-set TS esp-aes esp-sha-hmac
+
+Router(config)# access-list 101 permit ip 192.168.1.0 0.0.0.255 192.168.2.0 0.0.0.255
+
+Router(config)# crypto map VPNMAP 10 ipsec-isakmp
+Router(config-crypto-map)# set peer 203.0.113.2
+Router(config-crypto-map)# set transform-set TS
+Router(config-crypto-map)# match address 101
+Router(config-crypto-map)# exit
+
+Router(config)# interface g0/0
+Router(config-if)# crypto map VPNMAP</pre>
+        <p>De <code>access-list</code> bepaalt welk verkeer (interessant verkeer) via de tunnel versleuteld wordt.</p>
+      `},
+      {id:"acl-std", label:"Standard ACL", kicker:"ACL", title:"Standard ACL", html:`
+        <p>Een <strong>standaard ACL</strong> filtert alleen op bron-IP-adres, genummerd 1–99 (of 1300–1999 voor uitgebreid bereik). Plaats hem zo dicht mogelijk bij de <strong>bestemming</strong>.</p>
+        <pre>Router(config)# access-list 10 permit 192.168.1.0 0.0.0.255
+Router(config)# access-list 10 deny any
+
+Router(config)# interface g0/1
+Router(config-if)# ip access-group 10 out</pre>
+        <p>Er staat altijd een impliciete <code>deny any</code> aan het einde van elke ACL, ook als je die niet zelf typt.</p>
+      `},
+      {id:"acl-ext", label:"Extended ACL", kicker:"ACL", title:"Extended ACL", html:`
+        <p>Een <strong>uitgebreide ACL</strong> (100–199) filtert op bron, bestemming, protocol en poort. Plaats hem zo dicht mogelijk bij de <strong>bron</strong>.</p>
+        <pre>Router(config)# access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 80
+Router(config)# access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 443
+Router(config)# access-list 110 deny ip any any
+
+Router(config)# interface g0/0
+Router(config-if)# ip access-group 110 in</pre>
+        <h3>Controleren</h3>
+        <pre>show access-lists
+show ip interface g0/0</pre>
+      `}
+    ]
+  },
+  overig: {
+    label: "Overige",
+    pages: [
+      {id:"ov-subnet", label:"Subnetmask & Wildmask", kicker:"OVERIGE", title:"Subnetmask & Wildmask", html:`
+        <p>De 5 IP-adresklassen:</p>
+        <table>
+          <tr><th>Klasse</th><th>Beginadres</th><th>Eindadres</th></tr>
+          <tr><td>A</td><td>0.0.0.0</td><td>126.255.255.255</td></tr>
+          <tr><td>B</td><td>128.0.0.0</td><td>191.255.255.255</td></tr>
+          <tr><td>C</td><td>192.0.0.0</td><td>223.255.255.255</td></tr>
+          <tr><td>D</td><td>224.0.0.0</td><td>239.255.255.255</td></tr>
+          <tr><td>E</td><td>240.0.0.0</td><td>255.255.255.255</td></tr>
+        </table>
+        <p>Een wildmask is het "omgekeerde" van een subnetmask (255 − elk octet):</p>
+        <table>
+          <tr><th>Prefix</th><th>Subnetmask</th><th>Wildmask</th></tr>
+          <tr><td>/24</td><td>255.255.255.0</td><td>0.0.0.255</td></tr>
+          <tr><td>/25</td><td>255.255.255.128</td><td>0.0.0.127</td></tr>
+          <tr><td>/26</td><td>255.255.255.192</td><td>0.0.0.63</td></tr>
+          <tr><td>/27</td><td>255.255.255.224</td><td>0.0.0.31</td></tr>
+        </table>
+        <p>Wildmasks worden gebruikt bij ACL's en bij <code>network</code>-commando's in EIGRP/OSPF.</p>
+      `},
+      {id:"ov-etherchannel", label:"Ethernet Channel", kicker:"OVERIGE", title:"EtherChannel", html:`
+        <p><strong>EtherChannel</strong> bundelt meerdere fysieke links tot één logische link — meer bandbreedte en redundantie, zonder dat Spanning Tree links blokkeert.</p>
+        <pre>Switch(config)# interface range f0/1-2
+Switch(config-if-range)# channel-group 1 mode active
+
+Switch(config)# interface port-channel 1
+Switch(config-if)# switchport mode trunk</pre>
+        <p><code>mode active</code> gebruikt LACP (standaard); <code>mode desirable</code> gebruikt Cisco's eigen PAgP.</p>
+      `},
+      {id:"ov-hsrp", label:"HSRP", kicker:"OVERIGE", title:"HSRP", html:`
+        <p><strong>HSRP</strong> (Hot Standby Router Protocol) geeft twee routers een gedeeld virtueel gateway-IP, zodat bij uitval van de actieve router de andere automatisch overneemt.</p>
+        <pre>Router(config)# interface g0/0
+Router(config-if)# standby 1 ip 192.168.1.1
+Router(config-if)# standby 1 priority 110
+Router(config-if)# standby 1 preempt</pre>
+        <p>Hogere <code>priority</code> = actieve (active) router. <code>preempt</code> zorgt dat deze router de rol terugpakt zodra hij weer online is.</p>
+        <h3>Controleren</h3>
+        <pre>show standby brief</pre>
+      `},
+      {id:"ov-portsec", label:"Port-Security", kicker:"OVERIGE", title:"Port-Security", html:`
+        <p>Beperkt welke/hoeveel MAC-adressen op een poort mogen komen — beschermt tegen ongeautoriseerde apparaten en MAC-flooding.</p>
+        <pre>Switch(config)# interface fa0/1
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport port-security
+Switch(config-if)# switchport port-security maximum 2
+Switch(config-if)# switchport port-security mac-address sticky
+Switch(config-if)# switchport port-security violation shutdown</pre>
+        <p><code>violation shutdown</code> zet de poort in <em>err-disabled</em> bij een overtreding — moet je handmatig herstellen met <code>shutdown</code> / <code>no shutdown</code>.</p>
+        <h3>Controleren</h3>
+        <pre>show port-security interface fa0/1</pre>
+      `},
+      {id:"ov-frame", label:"Point-to-Point Frame Relay", kicker:"OVERIGE", title:"Point-to-Point Frame Relay", html:`
+        <p><strong>Frame Relay</strong> is een oudere WAN-technologie voor point-to-point verbindingen via een providernetwerk.</p>
+        <pre>Router(config)# interface s0/0/0
+Router(config-if)# encapsulation frame-relay
+Router(config-if)# ip address 192.168.1.1 255.255.255.252
+Router(config-if)# frame-relay map ip 192.168.1.2 102 broadcast</pre>
+        <p><code>102</code> is de lokale DLCI (Data Link Connection Identifier) — het adres van de virtuele verbinding, toegewezen door de provider.</p>
+      `},
+      {id:"ov-nat", label:"NAT / PAT", kicker:"OVERIGE", title:"NAT / PAT", html:`
+        <p><strong>NAT</strong> vertaalt interne (privé) IP-adressen naar een publiek adres. <strong>PAT</strong> (NAT overload) laat meerdere interne hosts één publiek adres delen via poortnummers.</p>
+        <pre>Router(config)# access-list 1 permit 192.168.1.0 0.0.0.255
+
+Router(config)# interface g0/0
+Router(config-if)# ip nat inside
+Router(config)# interface g0/1
+Router(config-if)# ip nat outside
+
+Router(config)# ip nat inside source list 1 interface g0/1 overload</pre>
+        <p><code>overload</code> is wat een gewone NAT-configuratie tot PAT maakt.</p>
+        <h3>Controleren</h3>
+        <pre>show ip nat translations
+show ip nat statistics</pre>
+      `}
+    ]
+  }
+};
+
+var catOrder = ["ipv4","ipv6","vlan","tunnels","overig"];
+
+var catbar = document.getElementById('catbar');
+var subbar = document.getElementById('subbar');
+var main = document.getElementById('main');
+
+catOrder.forEach(function(catId){
+  var btn = document.createElement('button');
+  btn.className = 'cat';
+  btn.setAttribute('data-cat', catId);
+  btn.textContent = DATA[catId].label;
+  btn.addEventListener('click', function(){ openCategory(catId, null, true); });
+  catbar.appendChild(btn);
+});
+
+function findPage(pageId){
+  for (var c = 0; c < catOrder.length; c++){
+    var cat = DATA[catOrder[c]];
+    for (var p = 0; p < cat.pages.length; p++){
+      if (cat.pages[p].id === pageId) return {cat: catOrder[c], page: cat.pages[p]};
+    }
+  }
+  return null;
+}
+
+function renderSubbar(catId, activePageId){
+  subbar.innerHTML = '';
+  DATA[catId].pages.forEach(function(pg){
+    var b = document.createElement('button');
+    b.className = 'subtab' + (pg.id === activePageId ? ' active' : '');
+    b.textContent = pg.label;
+    b.addEventListener('click', function(){ openPage(catId, pg.id, true); });
+    subbar.appendChild(b);
+  });
+}
+
+function renderPage(catId, page){
+  main.innerHTML =
+    '<div class="panel active">' +
+      '<div class="kicker">' + page.kicker + '</div>' +
+      '<h2>' + page.title + '</h2>' +
+      page.html +
+    '</div>';
+  Array.prototype.forEach.call(catbar.children, function(b){
+    b.classList.toggle('active', b.getAttribute('data-cat') === catId);
+  });
+}
+
+function openPage(catId, pageId, updateHash){
+  var page = DATA[catId].pages.find(function(p){ return p.id === pageId; });
+  renderSubbar(catId, pageId);
+  renderPage(catId, page);
+  if (updateHash !== false) history.replaceState(null, '', '#' + pageId);
+  window.scrollTo(0,0);
+}
+
+function openCategory(catId, pageId, updateHash){
+  var page = pageId ? DATA[catId].pages.find(function(p){ return p.id === pageId; }) : DATA[catId].pages[0];
+  openPage(catId, page.id, updateHash);
+}
+
+var initialHash = window.location.hash ? window.location.hash.slice(1) : null;
+var found = initialHash ? findPage(initialHash) : null;
+if (found){
+  openPage(found.cat, found.page.id, false);
+} else {
+  openCategory(catOrder[0], null, false);
+}
+
+})();
+</script>
+
+</body>
+</html>
