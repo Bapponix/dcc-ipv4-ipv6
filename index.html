@@ -1,26 +1,617 @@
 
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCC IPv4 & IPv6 — Netwerken</title>
+<style>
+:root {
+  --ink:#12212e;
+  --ink-2:#1c3444;
+  --paper:#f6f3ec;
+  --line:#dcd6c7;
+  --accent:#c98a2c;
+  --accent-2:#1f7a6c;
+  --text:#1b1b18;
+  --muted:#5b5850;
+  --code-bg:#0f1b26;
+  --code-text:#d9e6ea;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0;
+  background:var(--paper);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  line-height:1.65;
+}
+header.site {
+  background:var(--ink);
+  color:#eef1ec;
+  text-align:center;
+  padding:2.3rem 1rem 1.6rem;
+  border-bottom:3px solid var(--accent);
+}
+header h1 {
+  font-family:Georgia,serif;
+  font-size:clamp(1.7rem,4vw,2.5rem);
+  margin:0;
+}
+header p { margin:.3rem 0; color:#b9c3c9; }
+.byline { font-size:.85rem; }
+.tag {
+  display:inline-block;
+  margin-top:.8rem;
+  padding:.25rem .7rem;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  font-size:.75rem;
+}
+.catbar-wrap {
+  background:var(--ink-2);
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.catbar,.subbar {
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  overflow-x:auto;
+}
+.cat,.subtab {
+  background:none;
+  border:0;
+  cursor:pointer;
+  white-space:nowrap;
+  font-family:inherit;
+}
+.cat {
+  color:#b9c3c9;
+  padding:1rem;
+  font-weight:bold;
+  border-bottom:3px solid transparent;
+}
+.cat.active {
+  color:white;
+  border-bottom-color:var(--accent);
+}
+.subbar-wrap {
+  background:#0e1a24;
+  position:sticky;
+  top:49px;
+  z-index:19;
+}
+.subtab {
+  color:#9ba9b1;
+  padding:.7rem .9rem;
+  font-size:.82rem;
+  border-bottom:2px solid transparent;
+}
+.subtab.active {
+  color:var(--accent);
+  border-bottom-color:var(--accent-2);
+}
+main {
+  max-width:850px;
+  margin:auto;
+  padding:2.3rem 1.3rem 5rem;
+  min-height:65vh;
+}
+.kicker {
+  color:#9b651b;
+  font-family:monospace;
+  font-size:.8rem;
+  letter-spacing:.08em;
+}
+h2,h3 {
+  font-family:Georgia,serif;
+  color:var(--ink-2);
+}
+h2 { font-size:1.8rem; margin:.3rem 0 1rem; }
+h3 { margin-top:1.8rem; font-size:1.2rem; }
+p { margin:.7rem 0; }
+pre {
+  background:var(--code-bg);
+  color:var(--code-text);
+  padding:1rem;
+  border-radius:6px;
+  overflow-x:auto;
+  font-size:.82rem;
+  line-height:1.65;
+  white-space:pre;
+}
+code { font-family:Consolas,monospace; }
+p code,li code {
+  background:#ece7d8;
+  padding:.12rem .3rem;
+  border-radius:3px;
+}
+table {
+  width:100%;
+  border-collapse:collapse;
+  margin:1rem 0;
+  font-size:.85rem;
+  display:block;
+  overflow-x:auto;
+}
+th,td {
+  border:1px solid var(--line);
+  padding:.55rem;
+  text-align:left;
+}
+th {
+  background:var(--ink);
+  color:white;
+}
+tr:nth-child(even) td { background:#efece1; }
+.callout {
+  background:#fff9ec;
+  border:1px solid #e9d9ad;
+  border-left:4px solid var(--accent);
+  padding:.85rem 1rem;
+  margin:1.2rem 0;
+  border-radius:4px;
+}
+.callout strong { color:#8a5a12; }
+.success {
+  border-left:4px solid var(--accent-2);
+  background:#edf7f3;
+  padding:1rem;
+  margin:1rem 0;
+}
+.topology {
+  background:#e7ecee;
+  border:1px solid #ccd6db;
+  border-radius:5px;
+  padding:1rem;
+  text-align:center;
+  font-family:monospace;
+  font-size:.9rem;
+  overflow-x:auto;
+  white-space:pre;
+}
+.copy-btn {
+  float:right;
+  background:#263f4d;
+  color:white;
+  border:1px solid #58717c;
+  padding:.3rem .6rem;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:.75rem;
+}
+.copy-btn:hover { background:#356477; }
+footer {
+  text-align:center;
+  padding:2rem 1rem;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+  font-size:.8rem;
+}
+@media(max-width:600px) {
+  .cat { padding:.8rem; font-size:.8rem; }
+  .subtab { padding:.65rem; }
+  main { padding:1.5rem 1rem 4rem; }
+  pre { font-size:.75rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <h1>DCC IPv4 & IPv6</h1>
+  <p>Eigen studieoverzicht — Cisco Netwerken</p>
+  <p class="byline">MBO4 IT · Netwerken</p>
+  <span class="tag">IPv4 · IPv6 · VLAN · VPN · Routing</span>
+</header>
+
+<div class="catbar-wrap">
+  <nav class="catbar" id="catbar"></nav>
+</div>
+<div class="subbar-wrap">
+  <nav class="subbar" id="subbar"></nav>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  Eigen studieoverzicht — DCC IPv4 & IPv6
+</footer>
+
+<script>
+(function(){
+
+const DATA = {
+
+ipv4:{
+label:"IPv4 configuratie",
+pages:[
 {
-  id: "vpn-stappen-gre",
-  label: "VPN deel 1 · GRE",
-  kicker: "VPN · DEEL 1",
-  title: "VPN opzetten — routers, OSPF en GRE",
-  html: `
-    <p>In deze oefening gebruiken we drie routers: R1 — R2 — R3. Eerst configureren we de pc's en routers, daarna OSPF en de GRE-tunnel.</p>
-
-    <h3>Stap 1 — Pc's configureren</h3>
-    <table>
-      <tr><th>PC</th><th>IP-adres</th><th>Subnetmasker</th><th>Gateway</th></tr>
-      <tr><td>PC1</td><td>192.168.1.10</td><td>255.255.255.0</td><td>192.168.1.1</td></tr>
-      <tr><td>PC2</td><td>192.168.2.10</td><td>255.255.255.0</td><td>192.168.2.1</td></tr>
-      <tr><td>PC3</td><td>192.168.3.10</td><td>255.255.255.0</td><td>192.168.3.1</td></tr>
-    </table>
-
-    <h3>Stap 2 — Routerinterfaces configureren</h3>
-    <p>Controleer de subnetmaskers en gebruik <code>clock rate 64000</code> alleen op de DCE-kant van een seriële verbinding.</p>
-
-    <h3>Router 1</h3>
-    <pre>enable
+id:"ipv4-routers",
+label:"Routers verbinden",
+title:"IPv4 Routers verbinden",
+html:`
+<p>Om routers met elkaar te verbinden configureer je de interfaces en stel je routing in.</p>
+<h3>Interface configureren</h3>
+<pre>enable
 configure terminal
+interface g0/0
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+exit</pre>
+<h3>Statische route</h3>
+<pre>ip route 192.168.2.0 255.255.255.0 10.1.1.2</pre>
+<p>Het laatste adres is het next-hop-adres van de buurrouter. De next hop moet bereikbaar zijn.</p>
+`
+},
+{
+id:"ipv4-rip",
+label:"RIP",
+title:"IPv4 RIP",
+html:`
+<p>RIP is een distance-vector routingprotocol met maximaal 15 hops.</p>
+<pre>enable
+configure terminal
+router rip
+version 2
+network 192.168.1.0
+network 10.0.0.0
+no auto-summary
+exit</pre>
+<h3>Controleren</h3>
+<pre>show ip route rip
+show ip protocols</pre>
+`
+},
+{
+id:"ipv4-eigrp",
+label:"EIGRP",
+title:"IPv4 EIGRP",
+html:`
+<p>EIGRP gebruikt het DUAL-algoritme en kan snel routes berekenen.</p>
+<pre>enable
+configure terminal
+router eigrp 100
+network 192.168.1.0 0.0.0.255
+network 10.1.1.0 0.0.0.3
+no auto-summary
+exit</pre>
+<p>Het AS-nummer 100 moet op de deelnemende EIGRP-routers overeenkomen.</p>
+<h3>Controleren</h3>
+<pre>show ip eigrp neighbors
+show ip route eigrp</pre>
+`
+},
+{
+id:"ipv4-ospf",
+label:"OSPF",
+title:"IPv4 OSPF",
+html:`
+<p>OSPF is een link-state routingprotocol. In deze oefening gebruiken we area 0.</p>
+<pre>enable
+configure terminal
+router ospf 23
+network 192.168.1.0 0.0.0.255 area 0
+network 10.1.1.0 0.0.0.3 area 0
+exit</pre>
+<p>Het procesnummer 23 is lokaal en hoeft niet op iedere router gelijk te zijn.</p>
+<h3>Controleren</h3>
+<pre>show ip ospf neighbor
+show ip route ospf</pre>
+`
+},
+{
+id:"ipv4-dhcp-server",
+label:"DHCP via Server",
+title:"IPv4 DHCP via Server",
+html:`
+<p>Wanneer de DHCP-server in een ander subnet staat, gebruik je DHCP-relay.</p>
+<pre>enable
+configure terminal
+interface g0/0
+ip helper-address 192.168.99.10
+exit</pre>
+<p>Het helper-adres verwijst naar de DHCP-server.</p>
+`
+},
+{
+id:"ipv4-dhcp-router",
+label:"DHCP via Router",
+title:"IPv4 DHCP via Router",
+html:`
+<p>Een Cisco-router kan zelf IP-adressen uitdelen.</p>
+<pre>enable
+configure terminal
+ip dhcp excluded-address 192.168.1.1 192.168.1.10
+ip dhcp pool LAN
+network 192.168.1.0 255.255.255.0
+default-router 192.168.1.1
+dns-server 8.8.8.8
+exit</pre>
+<h3>Controleren</h3>
+<pre>show ip dhcp binding
+show ip dhcp pool</pre>
+`
+}
+]
+},
+
+ipv6:{
+label:"IPv6 configuratie",
+pages:[
+{
+id:"ipv6-routers",
+label:"Routers verbinden",
+title:"IPv6 Routers verbinden",
+html:`
+<p>Schakel IPv6-routing in voordat je IPv6-adressen configureert.</p>
+<pre>enable
+configure terminal
+ipv6 unicast-routing
+interface g0/0
+ipv6 address 2001:db8:1::1/64
+no shutdown
+exit</pre>
+<h3>Statische IPv6-route</h3>
+<pre>ipv6 route 2001:db8:2::/64 2001:db8:12::2</pre>
+<p>De next hop moet via een verbonden interface bereikbaar zijn.</p>
+`
+},
+{
+id:"ipv6-rip",
+label:"RIPng",
+title:"IPv6 RIPng",
+html:`
+<p>RIPng is de IPv6-variant van RIP.</p>
+<pre>enable
+configure terminal
+ipv6 unicast-routing
+ipv6 router rip CCNA
+exit
+interface g0/0
+ipv6 rip CCNA enable
+exit</pre>
+<h3>Controleren</h3>
+<pre>show ipv6 rip
+show ipv6 route rip</pre>
+`
+},
+{
+id:"ipv6-eigrp",
+label:"EIGRP",
+title:"IPv6 EIGRP",
+html:`
+<p>Voor klassieke EIGRP voor IPv6 configureer je een router-ID en activeer je EIGRP op interfaces.</p>
+<pre>enable
+configure terminal
+ipv6 unicast-routing
+ipv6 router eigrp 100
+eigrp router-id 1.1.1.1
+no shutdown
+exit
+interface g0/0
+ipv6 eigrp 100
+exit</pre>
+<h3>Controleren</h3>
+<pre>show ipv6 eigrp neighbors
+show ipv6 route eigrp</pre>
+`
+},
+{
+id:"ipv6-ospf",
+label:"OSPFv3",
+title:"IPv6 OSPFv3",
+html:`
+<p>OSPFv3 wordt gebruikt om IPv6-netwerken te routeren.</p>
+<pre>enable
+configure terminal
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 1.1.1.1
+exit
+interface g0/0
+ipv6 ospf 1 area 0
+exit</pre>
+<h3>Controleren</h3>
+<pre>show ipv6 ospf neighbor
+show ipv6 route ospf</pre>
+`
+},
+{
+id:"ipv6-dhcp-server",
+label:"DHCP via Server",
+title:"IPv6 DHCP via Server",
+html:`
+<p>DHCPv6-relay stuurt DHCPv6-berichten door naar een server.</p>
+<pre>enable
+configure terminal
+interface g0/0
+ipv6 dhcp relay destination 2001:db8:99::10
+exit</pre>
+`
+},
+{
+id:"ipv6-dhcp-router",
+label:"DHCP via Router",
+title:"IPv6 DHCP via Router",
+html:`
+<p>Een router kan DHCPv6 aanbieden. Hieronder staat een voorbeeld met extra DNS-informatie via DHCPv6 en adressen via SLAAC.</p>
+<pre>enable
+configure terminal
+ipv6 unicast-routing
+ipv6 dhcp pool LANPOOL
+dns-server 2001:4860:4860::8888
+domain-name school.local
+exit
+interface g0/0
+ipv6 address 2001:db8:1::1/64
+ipv6 dhcp server LANPOOL
+ipv6 nd other-config-flag
+no shutdown
+exit</pre>
+`
+}
+]
+},
+
+vlan:{
+label:"Virtual LAN",
+pages:[
+{
+id:"vlan-data",
+label:"Data Virtual LAN",
+title:"Data VLAN",
+html:`
+<p>Met VLAN's splits je een fysiek netwerk op in logische netwerken.</p>
+<h3>VLAN's aanmaken</h3>
+<pre>enable
+configure terminal
+vlan 10
+name Sales
+exit
+vlan 20
+name IT
+exit</pre>
+<h3>Access-poort</h3>
+<pre>interface fa0/1
+switchport mode access
+switchport access vlan 10
+exit</pre>
+<h3>Trunk-poort</h3>
+<pre>interface fa0/24
+switchport mode trunk
+switchport trunk allowed vlan 10,20
+exit</pre>
+`
+},
+{
+id:"vlan-roas",
+label:"Router On A Stick",
+title:"Router On A Stick",
+html:`
+<p>Router On A Stick maakt communicatie tussen VLAN's mogelijk via router-subinterfaces.</p>
+<h3>Switch</h3>
+<pre>vlan 10
+vlan 20
+interface fa0/24
+switchport mode trunk
+exit</pre>
+<h3>Router</h3>
+<pre>interface g0/0
+no shutdown
+exit
+interface g0/0.10
+encapsulation dot1Q 10
+ip address 192.168.10.1 255.255.255.0
+exit
+interface g0/0.20
+encapsulation dot1Q 20
+ip address 192.168.20.1 255.255.255.0
+exit</pre>
+`
+},
+{
+id:"vlan-wlan",
+label:"WLAN",
+title:"Wireless LAN",
+html:`
+<p>Een WLAN is een draadloos netwerk. Je kunt verschillende SSID's aan verschillende VLAN's koppelen.</p>
+<pre>interface fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 10,30
+exit</pre>
+<p>Controleer of het accesspoint trunking en VLAN-tagging ondersteunt.</p>
+`
+},
+{
+id:"vlan-soorten",
+label:"Verschillende VLANs",
+title:"Verschillende soorten VLAN's",
+html:`
+<table>
+<tr><th>VLAN</th><th>Functie</th></tr>
+<tr><td>Data VLAN</td><td>Gebruikersverkeer</td></tr>
+<tr><td>Default VLAN</td><td>Standaard VLAN 1</td></tr>
+<tr><td>Native VLAN</td><td>Niet-getagd trunkverkeer</td></tr>
+<tr><td>Management VLAN</td><td>Switchbeheer</td></tr>
+<tr><td>Voice VLAN</td><td>IP-telefonie</td></tr>
+</table>
+<h3>VTP</h3>
+<pre>vtp domain SCHOOL
+vtp mode server
+vtp password Cisco123</pre>
+<h3>DTP uitschakelen</h3>
+<pre>interface fa0/24
+switchport nonegotiate</pre>
+`
+}
+]
+},
+
+tunnels:{
+label:"Tunnels / ACL",
+pages:[
+{
+id:"vpn-overzicht",
+label:"VPN Overzicht",
+title:"VPN — Complete oefening",
+html:`
+<p>In deze oefening verbinden we drie routers met elkaar. Daarna configureren we OSPF, GRE en IPsec.</p>
+
+<h3>Netwerktopologie</h3>
+<div class="topology">LAN 1          WAN 1          WAN 2          LAN 3
+192.168.1.0    10.1.1.0       10.2.2.0       192.168.3.0
+    |             |              |               |
+   PC1 --- R1 ----------- R2 ----------- R3 --- PC3
+           |                              |
+           +========= GRE ===============+
+           +======== IPsec ==============+</div>
+
+<p>Router 2 heeft daarnaast een eigen LAN: 192.168.2.0/24.</p>
+
+<h3>IP-adressen</h3>
+<table>
+<tr><th>Apparaat</th><th>Interface</th><th>IP-adres</th></tr>
+<tr><td>R1</td><td>Fa0/0</td><td>192.168.1.1/24</td></tr>
+<tr><td>R1</td><td>S0/0/0</td><td>10.1.1.1/30</td></tr>
+<tr><td>R2</td><td>S0/0/0</td><td>10.1.1.2/30</td></tr>
+<tr><td>R2</td><td>S0/0/1</td><td>10.2.2.1/30</td></tr>
+<tr><td>R2</td><td>Fa0/0</td><td>192.168.2.1/24</td></tr>
+<tr><td>R3</td><td>S0/0/0</td><td>10.2.2.2/30</td></tr>
+<tr><td>R3</td><td>Fa0/0</td><td>192.168.3.1/24</td></tr>
+<tr><td>R1</td><td>Tunnel0</td><td>172.16.13.1/30</td></tr>
+<tr><td>R3</td><td>Tunnel0</td><td>172.16.13.2/30</td></tr>
+</table>
+
+<div class="callout"><strong>Let op:</strong> controleer in Packet Tracer welke seriële interfaces daadwerkelijk met elkaar verbonden zijn. De interface-namen kunnen per routermodel verschillen.</div>
+
+<p>Volg eerst <strong>VPN deel 1 — GRE</strong> en daarna <strong>VPN deel 2 — IPsec</strong>.</p>
+`
+},
+{
+id:"vpn-gre-stappen",
+label:"VPN deel 1 · GRE",
+title:"VPN deel 1 — PC's, routers, OSPF en GRE",
+html:`
+<h3>Stap 1 — PC's configureren</h3>
+<p>Open iedere pc in Packet Tracer en ga naar Desktop → IP Configuration.</p>
+<table>
+<tr><th>PC</th><th>IP-adres</th><th>Subnetmasker</th><th>Gateway</th></tr>
+<tr><td>PC1</td><td>192.168.1.10</td><td>255.255.255.0</td><td>192.168.1.1</td></tr>
+<tr><td>PC2</td><td>192.168.2.10</td><td>255.255.255.0</td><td>192.168.2.1</td></tr>
+<tr><td>PC3</td><td>192.168.3.10</td><td>255.255.255.0</td><td>192.168.3.1</td></tr>
+</table>
+
+<h3>Stap 2 — Routers configureren</h3>
+<p>Configureer FastEthernet en Serial. Gebruik een /24-masker voor de LAN's en /30 voor de WAN-links.</p>
+
+<h3>Router 1</h3>
+<pre>enable
+configure terminal
+hostname R1
 interface fastethernet0/0
 ip address 192.168.1.1 255.255.255.0
 no shutdown
@@ -30,9 +621,10 @@ ip address 10.1.1.1 255.255.255.252
 no shutdown
 exit</pre>
 
-    <h3>Router 2</h3>
-    <pre>enable
+<h3>Router 2</h3>
+<pre>enable
 configure terminal
+hostname R2
 interface fastethernet0/0
 ip address 192.168.2.1 255.255.255.0
 no shutdown
@@ -46,9 +638,10 @@ ip address 10.2.2.1 255.255.255.252
 no shutdown
 exit</pre>
 
-    <h3>Router 3</h3>
-    <pre>enable
+<h3>Router 3</h3>
+<pre>enable
 configure terminal
+hostname R3
 interface fastethernet0/0
 ip address 192.168.3.1 255.255.255.0
 no shutdown
@@ -58,49 +651,76 @@ ip address 10.2.2.2 255.255.255.252
 no shutdown
 exit</pre>
 
-    <h3>Stap 3 en 4 — OSPF configureren</h3>
-    <p>We kiezen OSPF met procesnummer 23 en area 0. Herhaal de juiste configuratie op iedere router.</p>
+<div class="callout"><strong>Clock rate:</strong> gebruik <code>clock rate 64000</code> alleen op een seriële DCE-interface. Controleer de DCE-kant met <code>show controllers serial 0/0/0</code> en pas het interfacenummer aan.</div>
 
-    <h3>Router 1</h3>
-    <pre>router ospf 23
+<h3>Stap 3 — Routingprotocol kiezen</h3>
+<p>Je kunt EIGRP of OSPF gebruiken. In deze oefening kiezen we OSPF.</p>
+
+<h3>Stap 4 — OSPF instellen</h3>
+<p>Gebruik OSPF-procesnummer 23 en area 0.</p>
+
+<h3>Router 1</h3>
+<pre>enable
+configure terminal
+router ospf 23
 network 192.168.1.0 0.0.0.255 area 0
 network 10.1.1.0 0.0.0.3 area 0
 exit</pre>
 
-    <h3>Router 2</h3>
-    <pre>router ospf 23
+<h3>Router 2</h3>
+<pre>enable
+configure terminal
+router ospf 23
 network 192.168.2.0 0.0.0.255 area 0
 network 10.1.1.0 0.0.0.3 area 0
 network 10.2.2.0 0.0.0.3 area 0
 exit</pre>
 
-    <h3>Router 3</h3>
-    <pre>router ospf 23
+<h3>Router 3</h3>
+<pre>enable
+configure terminal
+router ospf 23
 network 192.168.3.0 0.0.0.255 area 0
 network 10.2.2.0 0.0.0.3 area 0
 exit</pre>
 
-    <h3>Stap 5 — Wachtwoorden configureren</h3>
-    <p>Voer dit op alle routers uit.</p>
-    <pre>enable
+<h3>OSPF controleren</h3>
+<pre>show ip ospf neighbor
+show ip route ospf
+show ip protocols</pre>
+
+<h3>Stap 5 — Wachtwoorden maken</h3>
+<p>Voer onderstaande configuratie uit op alle drie de routers.</p>
+
+<h3>Consolewachtwoord</h3>
+<pre>enable
 configure terminal
 line console 0
 password cisco
 login
-exit
-enable secret cisco
-line vty 0 15
+exit</pre>
+
+<h3>Enable-wachtwoord</h3>
+<pre>enable secret cisco</pre>
+
+<h3>VTY-wachtwoord</h3>
+<pre>line vty 0 15
 password cisco
 login
-exit
-service password-encryption
+exit</pre>
+
+<h3>Wachtwoorden versluieren</h3>
+<pre>service password-encryption
 end
 copy running-config startup-config</pre>
 
-    <div class="callout"><strong>Let op:</strong> service password-encryption biedt alleen eenvoudige versluiering. Gebruik in echte netwerken sterke wachtwoorden en SSH.</div>
+<div class="callout"><strong>Beveiliging:</strong> het wachtwoord 'cisco' is alleen bedoeld voor een oefening. service password-encryption is zwakke, omkeerbare versluiering. Gebruik in productie sterke wachtwoorden, SSH en veilige authenticatie.</div>
 
-    <h3>Stap 6 — GRE-tunnel Router 1</h3>
-    <pre>enable
+<h3>Stap 6 — GRE-tunnel maken</h3>
+<p>We maken een GRE-tunnel van Router 1 naar Router 3 over Router 2.</p>
+
+<h3>Router 1 — Linkerkant</h3>
+<pre>enable
 configure terminal
 interface tunnel0
 ip address 172.16.13.1 255.255.255.252
@@ -110,8 +730,8 @@ tunnel mode gre ip
 no shutdown
 exit</pre>
 
-    <h3>GRE-tunnel Router 3</h3>
-    <pre>enable
+<h3>Router 3 — Rechterkant</h3>
+<pre>enable
 configure terminal
 interface tunnel0
 ip address 172.16.13.2 255.255.255.252
@@ -121,31 +741,38 @@ tunnel mode gre ip
 no shutdown
 exit</pre>
 
-    <h3>GRE controleren</h3>
-    <pre>show ip interface brief
-show ip ospf neighbor
-show ip route
+<h3>Tunnel testen</h3>
+<p>Vanaf Router 1:</p>
+<pre>ping 172.16.13.2
 show interfaces tunnel0
-ping 172.16.13.2</pre>
+show ip interface brief</pre>
 
-    <div class="callout"><strong>Belangrijk:</strong> GRE maakt een tunnel, maar versleutelt zelf geen verkeer. Daarvoor gebruiken we IPsec in deel 2. De interface-namen en adressen zijn voorbeelden voor deze topologie.</div>
-  `
+<p>Vanaf Router 3:</p>
+<pre>ping 172.16.13.1
+show interfaces tunnel0</pre>
+
+<div class="success"><strong>GRE-tunnel ingesteld.</strong> Als de tunneladressen elkaar bereiken, werkt de GRE-verbinding. GRE versleutelt het verkeer niet.</div>
+`
 },
 {
-  id: "vpn-stappen-ipsec",
-  label: "VPN deel 2 · IPsec",
-  kicker: "VPN · DEEL 2",
-  title: "VPN beveiligen — IPsec Router 1 en Router 3",
-  html: `
-    <p>We configureren een site-to-site IPsec VPN tussen Router 1 en Router 3. Router 2 zorgt voor de routing tussen beide routers.</p>
+id:"vpn-ipsec-stappen",
+label:"VPN deel 2 · IPsec",
+title:"VPN deel 2 — IPsec configureren",
+html:`
+<p>Nu configureren we een site-to-site IPsec VPN tussen Router 1 en Router 3. De configuratie hieronder beschermt LAN-naar-LAN-verkeer rechtstreeks met IPsec.</p>
 
-    <h3>Stap 7 — Router 1: ACL instellen</h3>
-    <pre>enable
+<div class="callout"><strong>Belangrijk:</strong> dit is een aparte IPsec-configuratie naast de GRE-tunnel. Voor versleuteling van het GRE-verkeer zelf is een aangepaste GRE-over-IPsec-configuratie nodig.</div>
+
+<h3>Stap 7 — Router 1</h3>
+
+<h3>1. Access-list maken</h3>
+<p>Deze ACL selecteert verkeer van LAN 1 naar LAN 3.</p>
+<pre>enable
 configure terminal
 access-list 110 permit ip 192.168.1.0 0.0.0.255 192.168.3.0 0.0.0.255</pre>
 
-    <h3>Router 1 — ISAKMP-policy</h3>
-    <pre>crypto isakmp policy 10
+<h3>2. ISAKMP-policy maken</h3>
+<pre>crypto isakmp policy 10
 encryption aes 256
 hash sha
 authentication pre-share
@@ -153,32 +780,41 @@ group 14
 lifetime 86400
 exit</pre>
 
-    <h3>Router 1 — Pre-shared key</h3>
-    <pre>crypto isakmp key vpnpa55 address 10.2.2.2</pre>
+<p>De lifetime is 86400 seconden, oftewel 24 uur. De beide routers moeten compatibele IKE-instellingen gebruiken.</p>
 
-    <h3>Router 1 — IPsec transform-set</h3>
-    <pre>crypto ipsec transform-set vpn-set esp-aes esp-sha-hmac</pre>
+<h3>3. Pre-shared key</h3>
+<pre>crypto isakmp key vpnpa55 address 10.2.2.2</pre>
 
-    <h3>Router 1 — Crypto map</h3>
-    <pre>crypto map vpn-map 10 ipsec-isakmp
+<p>Het peer-adres is het WAN-adres van Router 3.</p>
+
+<h3>4. IPsec transform-set</h3>
+<pre>crypto ipsec transform-set vpn-set esp-aes esp-sha-hmac</pre>
+
+<h3>5. Crypto map</h3>
+<pre>crypto map vpn-map 10 ipsec-isakmp
 description VPN connection to R3
 set peer 10.2.2.2
 set transform-set vpn-set
 match address 110
 exit</pre>
 
-    <h3>Router 1 — Crypto map toepassen</h3>
-    <pre>interface serial0/0/0
+<h3>6. Crypto map toepassen</h3>
+<pre>interface serial0/0/0
 crypto map vpn-map
-exit</pre>
+exit
+end
+copy running-config startup-config</pre>
 
-    <h3>Router 3 — ACL instellen</h3>
-    <pre>enable
+<h3>Stap 8 — Router 3</h3>
+
+<h3>1. Access-list maken</h3>
+<p>Op Router 3 worden de bron- en bestemmingsnetwerken omgedraaid.</p>
+<pre>enable
 configure terminal
 access-list 110 permit ip 192.168.3.0 0.0.0.255 192.168.1.0 0.0.0.255</pre>
 
-    <h3>Router 3 — ISAKMP-policy</h3>
-    <pre>crypto isakmp policy 10
+<h3>2. ISAKMP-policy</h3>
+<pre>crypto isakmp policy 10
 encryption aes 256
 hash sha
 authentication pre-share
@@ -186,36 +822,339 @@ group 14
 lifetime 86400
 exit</pre>
 
-    <h3>Router 3 — Pre-shared key</h3>
-    <pre>crypto isakmp key vpnpa55 address 10.1.1.1</pre>
+<h3>3. Pre-shared key</h3>
+<pre>crypto isakmp key vpnpa55 address 10.1.1.1</pre>
 
-    <h3>Router 3 — IPsec transform-set</h3>
-    <pre>crypto ipsec transform-set vpn-set esp-aes esp-sha-hmac</pre>
+<h3>4. Transform-set</h3>
+<pre>crypto ipsec transform-set vpn-set esp-aes esp-sha-hmac</pre>
 
-    <h3>Router 3 — Crypto map</h3>
-    <pre>crypto map vpn-map 10 ipsec-isakmp
+<h3>5. Crypto map</h3>
+<pre>crypto map vpn-map 10 ipsec-isakmp
 description VPN connection to R1
 set peer 10.1.1.1
 set transform-set vpn-set
 match address 110
 exit</pre>
 
-    <h3>Router 3 — Crypto map toepassen</h3>
-    <pre>interface serial0/0/0
+<h3>6. Crypto map toepassen</h3>
+<pre>interface serial0/0/0
 crypto map vpn-map
 exit
 end
 copy running-config startup-config</pre>
 
-    <h3>Stap 8 — VPN testen</h3>
-    <pre>show crypto isakmp sa
+<h3>Stap 9 — VPN testen</h3>
+<p>Controleer de IKE- en IPsec-verbinding:</p>
+<pre>show crypto isakmp sa
 show crypto ipsec sa
 show crypto map
-show access-lists 110
-ping 192.168.3.10</pre>
+show access-lists 110</pre>
 
-    <p>Test de verbinding vanaf PC1 naar PC3. Controleer of de IPsec-tellers oplopen en de beveiligde verbinding actief is.</p>
+<p>Open op PC1 de Command Prompt en ping PC3:</p>
+<pre>ping 192.168.3.10</pre>
 
-    <div class="callout"><strong>Let op:</strong> dit voorbeeld beveiligt rechtstreeks LAN-naar-LAN-verkeer met IPsec. Om GRE-verkeer zelf via IPsec te beveiligen, moet je de crypto-configuratie aanpassen. SHA en groep 14 moeten door je router of Packet Tracer-versie worden ondersteund.</div>
-  `
+<p>Controleer daarna opnieuw:</p>
+<pre>show crypto ipsec sa</pre>
+
+<p>De encaps- en decaps-tellers moeten toenemen wanneer verkeer door de VPN gaat.</p>
+
+<div class="success"><strong>IPsec VPN ingesteld.</strong> De VPN is pas daadwerkelijk werkend wanneer de IKE/IPsec-beveiligingsassociaties actief zijn en de versleutelde verkeerstellers oplopen.</div>
+
+<div class="callout"><strong>Let op:</strong> niet iedere Packet Tracer-router ondersteunt AES-256, SHA en DH-groep 14. Controleer de beschikbare commando's met <code>?</code>. Voor echte netwerken zijn moderne IKEv2- en IPsec-instellingen aanbevolen.</div>
+`
 },
+{
+id:"tun-gre",
+label:"GRE Tunnel",
+title:"GRE Tunnel — Basis",
+html:`
+<p>GRE staat voor Generic Routing Encapsulation. Het kapselt netwerkverkeer in binnen een IP-pakket.</p>
+<h3>Router 1</h3>
+<pre>interface tunnel0
+ip address 172.16.13.1 255.255.255.252
+tunnel source serial0/0/0
+tunnel destination 10.2.2.2
+tunnel mode gre ip
+no shutdown</pre>
+<h3>Router 3</h3>
+<pre>interface tunnel0
+ip address 172.16.13.2 255.255.255.252
+tunnel source serial0/0/0
+tunnel destination 10.1.1.1
+tunnel mode gre ip
+no shutdown</pre>
+<h3>Controleren</h3>
+<pre>show interfaces tunnel0
+ping 172.16.13.2</pre>
+`
+},
+{
+id:"tun-vpn",
+label:"VPN Tunnel",
+title:"VPN Tunnel — IPsec Basis",
+html:`
+<p>IPsec kan verkeer tussen twee locaties versleutelen.</p>
+<h3>Belangrijke onderdelen</h3>
+<ul>
+<li>ISAKMP-policy: IKE-instellingen</li>
+<li>Pre-shared key: gedeeld geheim</li>
+<li>Transform-set: beveiliging van gegevens</li>
+<li>Access-list: selecteert het te beschermen verkeer</li>
+<li>Crypto map: koppelt de configuratie aan een interface</li>
+</ul>
+<h3>Voorbeeld</h3>
+<pre>crypto isakmp policy 10
+encryption aes 256
+hash sha
+authentication pre-share
+group 14
+exit
+crypto isakmp key vpnpa55 address 10.2.2.2
+crypto ipsec transform-set vpn-set esp-aes esp-sha-hmac</pre>
+<p>Bekijk VPN deel 2 voor de complete configuratie op beide routers.</p>
+`
+},
+{
+id:"acl-std",
+label:"Standard ACL",
+title:"Standard Access Control List",
+html:`
+<p>Een standaard ACL filtert verkeer op het bron-IP-adres.</p>
+<pre>enable
+configure terminal
+access-list 10 permit 192.168.1.0 0.0.0.255
+interface g0/1
+ip access-group 10 out
+exit</pre>
+<p>Standaard ACL's plaats je meestal dicht bij de bestemming.</p>
+`
+},
+{
+id:"acl-ext",
+label:"Extended ACL",
+title:"Extended Access Control List",
+html:`
+<p>Een uitgebreide ACL kan filteren op bron, bestemming, protocol en poort.</p>
+<pre>enable
+configure terminal
+access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 80
+access-list 110 permit tcp 192.168.1.0 0.0.0.255 any eq 443
+access-list 110 deny ip any any
+interface g0/0
+ip access-group 110 in
+exit</pre>
+<h3>Controleren</h3>
+<pre>show access-lists
+show ip interface g0/0</pre>
+`
+}
+]
+},
+
+overig:{
+label:"Overige",
+pages:[
+{
+id:"ov-subnet",
+label:"Subnetmask & Wildmask",
+title:"Subnetmasker en Wildcardmasker",
+html:`
+<p>Een wildcardmasker is het omgekeerde van het subnetmasker.</p>
+<table>
+<tr><th>Prefix</th><th>Subnetmasker</th><th>Wildcard</th></tr>
+<tr><td>/24</td><td>255.255.255.0</td><td>0.0.0.255</td></tr>
+<tr><td>/25</td><td>255.255.255.128</td><td>0.0.0.127</td></tr>
+<tr><td>/26</td><td>255.255.255.192</td><td>0.0.0.63</td></tr>
+<tr><td>/27</td><td>255.255.255.224</td><td>0.0.0.31</td></tr>
+<tr><td>/30</td><td>255.255.255.252</td><td>0.0.0.3</td></tr>
+</table>
+<h3>Voorbeeld OSPF</h3>
+<pre>network 10.1.1.0 0.0.0.3 area 0</pre>
+`
+},
+{
+id:"ov-etherchannel",
+label:"EtherChannel",
+title:"EtherChannel",
+html:`
+<p>EtherChannel bundelt meerdere fysieke verbindingen tot één logische verbinding.</p>
+<pre>enable
+configure terminal
+interface range fa0/1-2
+switchport mode trunk
+channel-group 1 mode active
+exit
+interface port-channel 1
+switchport mode trunk
+exit</pre>
+<p>Mode active gebruikt LACP.</p>
+`
+},
+{
+id:"ov-hsrp",
+label:"HSRP",
+title:"Hot Standby Router Protocol",
+html:`
+<p>HSRP biedt een virtuele gateway voor redundantie.</p>
+<pre>interface g0/0
+standby 1 ip 192.168.1.1
+standby 1 priority 110
+standby 1 preempt
+exit</pre>
+<h3>Controleren</h3>
+<pre>show standby brief</pre>
+`
+},
+{
+id:"ov-portsec",
+label:"Port-Security",
+title:"Switch Port-Security",
+html:`
+<p>Port-security beperkt welke MAC-adressen toegang krijgen tot een switchpoort.</p>
+<pre>interface fa0/1
+switchport mode access
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+exit</pre>
+<h3>Controleren</h3>
+<pre>show port-security interface fa0/1</pre>
+`
+},
+{
+id:"ov-frame",
+label:"Frame Relay",
+title:"Point-to-Point Frame Relay",
+html:`
+<p>Frame Relay is een oudere WAN-technologie.</p>
+<pre>interface serial0/0/0
+encapsulation frame-relay
+exit
+interface serial0/0/0.102 point-to-point
+ip address 10.1.1.1 255.255.255.252
+frame-relay interface-dlci 102
+no shutdown
+exit</pre>
+<p>Het DLCI-nummer moet overeenkomen met de Frame Relay-configuratie.</p>
+`
+},
+{
+id:"ov-nat",
+label:"NAT / PAT",
+title:"NAT en PAT",
+html:`
+<p>NAT vertaalt IP-adressen. PAT laat meerdere interne apparaten één extern IP-adres delen.</p>
+<pre>enable
+configure terminal
+access-list 1 permit 192.168.1.0 0.0.0.255
+interface g0/0
+ip nat inside
+exit
+interface g0/1
+ip nat outside
+exit
+ip nat inside source list 1 interface g0/1 overload</pre>
+<h3>Controleren</h3>
+<pre>show ip nat translations
+show ip nat statistics</pre>
+`
+}
+]
+}
+
+};
+
+const order=["ipv4","ipv6","vlan","tunnels","overig"];
+const catbar=document.getElementById("catbar");
+const subbar=document.getElementById("subbar");
+const main=document.getElementById("main");
+
+function openPage(catId,pageId,updateHash=true){
+  const category=DATA[catId];
+  if(!category) return;
+  const page=category.pages.find(p=>p.id===pageId);
+  if(!page) return;
+
+  document.querySelectorAll(".cat").forEach(button=>{
+    button.classList.toggle(
+      "active",
+      button.dataset.cat===catId
+    );
+  });
+
+  subbar.innerHTML="";
+  category.pages.forEach(p=>{
+    const button=document.createElement("button");
+    button.className="subtab"+(p.id===pageId?" active":"");
+    button.textContent=p.label;
+    button.addEventListener("click",()=>{
+      openPage(catId,p.id);
+    });
+    subbar.appendChild(button);
+  });
+
+  main.innerHTML=`
+    <section class="panel">
+      <div class="kicker">${category.label.toUpperCase()}</div>
+      <h2>${page.title}</h2>
+      ${page.html}
+    </section>
+  `;
+
+  main.querySelectorAll("pre").forEach(pre=>{
+    const button=document.createElement("button");
+    button.className="copy-btn";
+    button.textContent="Kopieer";
+    button.addEventListener("click",async()=>{
+      const code=pre.querySelector("code");
+      const content=code?code.innerText:pre.innerText;
+      try{
+        await navigator.clipboard.writeText(content);
+        button.textContent="Gekopieerd!";
+        setTimeout(()=>button.textContent="Kopieer",1500);
+      }catch(error){
+        button.textContent="Selecteer tekst";
+      }
+    });
+    pre.parentNode.insertBefore(button,pre);
+  });
+
+  if(updateHash){
+    history.replaceState(null,"","#"+pageId);
+  }
+  window.scrollTo(0,0);
+}
+
+function openCategory(catId){
+  openPage(catId,DATA[catId].pages[0].id);
+}
+
+order.forEach(catId=>{
+  const button=document.createElement("button");
+  button.className="cat";
+  button.dataset.cat=catId;
+  button.textContent=DATA[catId].label;
+  button.addEventListener("click",()=>openCategory(catId));
+  catbar.appendChild(button);
+});
+
+function loadFromHash(){
+  const hash=location.hash.substring(1);
+  for(const catId of order){
+    const page=DATA[catId].pages.find(p=>p.id===hash);
+    if(page){
+      openPage(catId,page.id,false);
+      return;
+    }
+  }
+  openPage("ipv4","ipv4-routers",false);
+}
+
+window.addEventListener("hashchange",loadFromHash);
+loadFromHash();
+
+})();
+</script>
+</body>
+</html>
